@@ -27,10 +27,45 @@ class ProductController extends Controller
     }
 
     // Главная страница со списком продуктов
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('images')->latest()->paginate(12);
-        return view('products.index', compact('products'));
+        $query = Product::with('images');
+        
+        // Поиск по названию и описанию
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Фильтр по категории
+        if ($request->filled('category')) {
+            $query->where('category', $request->get('category'));
+        }
+        
+        // Сортировка
+        $sort = $request->get('sort', 'newest');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->latest();
+                break;
+        }
+        
+        $products = $query->paginate(12)->withQueryString();
+        
+        // Получаем список категорий для фильтра
+        $categories = $this->getCategories();
+        
+        return view('products.index', compact('products', 'categories'));
     }
 
     // Страница создания продукта
@@ -66,15 +101,6 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')
             ->with('success', 'Товар успешно добавлен!');
-        
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            // Сохранит в storage/app/public/products/[filename]
-            
-            // Для получения URL:
-            $url = Storage::disk('public')->url($path);
-            // Вернет: /storage/products/[filename]
-    }
     }
 
     // Просмотр деталей продукта
@@ -87,7 +113,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = $this->getCategories();
-        return view('products.edit', compact('product', 'categories'));
+        $product->load('images'); // Загружаем изображения для редактирования
+        return view('products.create', compact('product', 'categories'));
     }
 
     // Обновление продукта
@@ -170,26 +197,37 @@ private function processImages($images, $product)
         $filename = time() . '_' . $image->getClientOriginalName();
         $path = 'products/' . $product->id . '/' . $filename;
         
-        // Сохранение оригинального изображения
-        $image->storeAs('public/' . $path);
+        // Сохранение оригинального изображения в storage/app/public/
+        $savedPath = Storage::disk('public')->putFileAs(
+            'products/' . $product->id,
+            $image,
+            $filename
+        );
+        
+        // Полный путь к сохраненному файлу
+        $fullPath = storage_path('app/public/' . $savedPath);
         
         // Создание миниатюры с помощью GD (встроенный PHP)
-        if (extension_loaded('gd')) {
-            $this->createThumbnail($image, $product->id, $filename);
+        if (extension_loaded('gd') && file_exists($fullPath)) {
+            $this->createThumbnail($fullPath, $product->id, $filename);
         }
         
         // Создание записи в БД
         ProductImage::create([
             'product_id' => $product->id,
-            'image_path' => $path,
+            'image_path' => $savedPath, // Путь уже без 'public/'
             'is_main' => $index === 0
         ]);
     }
 }
 
-private function createThumbnail($image, $productId, $filename)
+private function createThumbnail($sourcePath, $productId, $filename)
 {
-    $sourcePath = $image->getRealPath();
+    // Проверяем существование исходного файла
+    if (!file_exists($sourcePath)) {
+        return;
+    }
+    
     $thumbnailPath = storage_path('app/public/products/' . $productId . '/thumbnail_' . $filename);
     
     // Создаем директорию если не существует
@@ -199,6 +237,10 @@ private function createThumbnail($image, $productId, $filename)
     
     // Получаем информацию об изображении
     list($width, $height, $type) = getimagesize($sourcePath);
+    
+    if (!$width || !$height) {
+        return; // Не удалось получить размеры изображения
+    }
     
     // Создаем изображение в зависимости от типа
     switch ($type) {

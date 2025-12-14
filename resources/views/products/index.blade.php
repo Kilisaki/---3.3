@@ -13,35 +13,58 @@
     </div>
     
     <!-- Поиск и фильтры -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <input type="text" class="form-control bg-eerie-black text-white-smoke border-silver" 
-                   placeholder="Поиск товаров...">
+    <form method="GET" action="{{ route('products.index') }}" id="filterForm">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <input type="text" 
+                       name="search" 
+                       id="searchInput"
+                       class="form-control bg-eerie-black text-white-smoke border-silver" 
+                       placeholder="Поиск товаров..."
+                       value="{{ request('search') }}">
+            </div>
+            <div class="col-md-4">
+                <select name="category" 
+                        id="categorySelect"
+                        class="form-select bg-eerie-black text-white-smoke border-silver">
+                    <option value="">Все категории</option>
+                    @php
+                        $categoryIcons = [
+                            'keyboards' => '⌨️',
+                            'mice' => '🖱️',
+                            'headsets' => '🎧',
+                            'mousepads' => '🖱️',
+                            'controllers' => '🎮',
+                            'monitors' => '🖥️',
+                            'chairs' => '🪑',
+                            'accessories' => '⚙️'
+                        ];
+                    @endphp
+                    @foreach($categories as $key => $label)
+                        <option value="{{ $key }}" {{ request('category') == $key ? 'selected' : '' }}>
+                            {{ ($categoryIcons[$key] ?? '📦') . ' ' . $label }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select name="sort" 
+                        id="sortSelect"
+                        class="form-select bg-eerie-black text-white-smoke border-silver">
+                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Сначала новые</option>
+                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>По цене (возрастание)</option>
+                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>По цене (убывание)</option>
+                </select>
+            </div>
         </div>
-        <div class="col-md-4">
-            <select class="form-select bg-eerie-black text-white-smoke border-silver">
-                <option value="">Все категории</option>
-                <option value="keyboards">Клавиатуры</option>
-                <option value="mice">Мыши</option>
-                <option value="headsets">Наушники</option>
-                <option value="mousepads">Коврики</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <select class="form-select bg-eerie-black text-white-smoke border-silver">
-                <option value="">Сортировка</option>
-                <option value="price_asc">По цене (возрастание)</option>
-                <option value="price_desc">По цене (убывание)</option>
-                <option value="newest">Сначала новые</option>
-            </select>
-        </div>
-    </div>
+    </form>
     
     <!-- Карточки товаров -->
     <div class="row g-4">
         @forelse($products as $product)
             <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="card card-gaming h-100">
+                <div class="card card-gaming h-100" style="cursor: pointer;" 
+                     onclick="openProductModal({{ $product->id }})">
                     @if($product->mainImage)
                         <img src="{{ asset('storage/' . $product->mainImage->image_path) }}" 
                              class="card-img-top" 
@@ -76,25 +99,31 @@
                                 {{ $product->price }} ₽
                             </span>
                             
-                            <div class="btn-group">
+                            <div class="btn-group" onclick="event.stopPropagation();">
                                 <button type="button" class="btn btn-sm btn-outline-silver" 
                                         data-bs-toggle="modal" 
-                                        data-bs-target="#productModal{{ $product->id }}">
+                                        data-bs-target="#productModal{{ $product->id }}"
+                                        onclick="event.stopPropagation();"
+                                        title="Просмотр">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 
                                 <a href="{{ route('products.edit', $product) }}" 
-                                   class="btn btn-sm btn-outline-timberwolf">
+                                   class="btn btn-sm btn-outline-timberwolf"
+                                   onclick="event.stopPropagation();"
+                                   title="Редактировать">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 
                                 <form action="{{ route('products.destroy', $product) }}" 
-                                      method="POST" class="d-inline">
+                                      method="POST" class="d-inline"
+                                      onclick="event.stopPropagation();"
+                                      id="deleteForm{{ $product->id }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-blood-red"
-                                            onclick="return confirm('Удалить товар?')">
-                                        <i class="fas fa-trash"></i>
+                                            onclick="event.stopPropagation(); handleDelete(event, {{ $product->id }});">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>
@@ -103,7 +132,20 @@
                     
                     <div class="card-footer bg-transparent border-top border-silver">
                         <small class="text-silver">
-                            <i class="fas fa-layer-group me-1"></i>{{ $product->category }}
+                            @php
+                                $categoryIcons = [
+                                    'keyboards' => 'fa-keyboard',
+                                    'mice' => 'fa-mouse',
+                                    'headsets' => 'fa-headset',
+                                    'mousepads' => 'fa-square',
+                                    'controllers' => 'fa-gamepad',
+                                    'monitors' => 'fa-desktop',
+                                    'chairs' => 'fa-chair',
+                                    'accessories' => 'fa-cog'
+                                ];
+                                $icon = $categoryIcons[strtolower($product->category)] ?? 'fa-layer-group';
+                            @endphp
+                            <i class="fas {{ $icon }} me-1"></i>{{ $product->category }}
                             @if($product->stock > 0)
                                 <span class="ms-3 text-success">
                                     <i class="fas fa-check-circle me-1"></i>В наличии
@@ -159,3 +201,108 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Handle delete with toast notification
+function handleDelete(event, productId) {
+    event.preventDefault();
+    if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+        const form = document.getElementById('deleteForm' + productId);
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => {
+            if (response.ok || response.redirected) {
+                if (typeof showToast === 'function') {
+                    showToast('Товар успешно удален!', 'success');
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                if (typeof showToast === 'function') {
+                    showToast('Ошибка при удалении товара', 'error');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (typeof showToast === 'function') {
+                showToast('Ошибка при удалении товара', 'error');
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filterForm');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    
+    let searchTimeout;
+    
+    // Поиск с задержкой (debounce)
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                filterForm.submit();
+            }, 500);
+        });
+    }
+    
+    // Фильтр по категории
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    }
+    
+    // Сортировка
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    }
+    
+    // Инициализация модальных окон Bootstrap
+    const productModals = document.querySelectorAll('.modal');
+    productModals.forEach(function(modal) {
+        if (!modal._modal) {
+            modal._modal = new bootstrap.Modal(modal);
+        }
+    });
+});
+
+// Функция для открытия модального окна товара
+function openProductModal(productId) {
+    const modalElement = document.getElementById('productModal' + productId);
+    if (modalElement) {
+        let modal = bootstrap.Modal.getInstance(modalElement);
+        if (!modal) {
+            modal = new bootstrap.Modal(modalElement);
+        }
+        
+        // Инициализация карусели при открытии модального окна
+        modalElement.addEventListener('shown.bs.modal', function() {
+            const carousel = modalElement.querySelector('.carousel');
+            if (carousel && !carousel._carousel) {
+                const carouselInstance = new bootstrap.Carousel(carousel);
+                carousel._carousel = carouselInstance;
+            }
+        }, { once: true });
+        
+        modal.show();
+    }
+}
+</script>
+@endpush

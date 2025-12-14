@@ -55,6 +55,11 @@ class Product extends Model
 
     public function getMainImageAttribute()
     {
+        // Проверяем, загружены ли изображения
+        if (!$this->relationLoaded('images')) {
+            $this->load('images');
+        }
+        
         return $this->images->where('is_main', true)->first() 
             ?? $this->images->first() 
             ?? null;

@@ -33,7 +33,7 @@
         </div>
         
         @php
-            $featuredProducts = App\Models\Product::with('images')
+            $featuredProducts = \App\Models\Product::with('images')
                 ->where('is_featured', true)
                 ->take(6)
                 ->get();
@@ -49,7 +49,7 @@
                              style="height: 150px; object-fit: cover;">
                     @endif
                     <div class="card-body">
-                        <h6 class="card-title">{{ Str::limit($product->name, 30) }}</h6>
+                        <h6 class="card-title text-white-smoke">{{ Str::limit($product->name, 30) }}</h6>
                         <p class="h5 text-imperial-red mb-0">{{ $product->price }} ₽</p>
                     </div>
                 </div>
@@ -67,25 +67,27 @@
         
         @php
             $categories = [
-                ['icon' => 'fa-keyboard', 'name' => 'Клавиатуры', 'color' => 'bg-cornell-red'],
-                ['icon' => 'fa-mouse', 'name' => 'Мыши', 'color' => 'bg-imperial-red'],
-                ['icon' => 'fa-headset', 'name' => 'Наушники', 'color' => 'bg-blood-red'],
-                ['icon' => 'fa-expand-alt', 'name' => 'Коврики', 'color' => 'bg-cornell-red-2'],
-                ['icon' => 'fa-gamepad', 'name' => 'Контроллеры', 'color' => 'bg-imperial-red'],
-                ['icon' => 'fa-desktop', 'name' => 'Мониторы', 'color' => 'bg-blood-red'],
+                ['icon' => 'fa-keyboard', 'key' => 'keyboards', 'name' => 'Клавиатуры', 'color' => 'bg-cornell-red'],
+                ['icon' => 'fa-mouse', 'key' => 'mice', 'name' => 'Мыши', 'color' => 'bg-imperial-red'],
+                ['icon' => 'fa-headset', 'key' => 'headsets', 'name' => 'Наушники', 'color' => 'bg-blood-red'],
+                ['icon' => 'fa-square', 'key' => 'mousepads', 'name' => 'Коврики', 'color' => 'bg-cornell-red-2'],
+                ['icon' => 'fa-gamepad', 'key' => 'controllers', 'name' => 'Контроллеры', 'color' => 'bg-imperial-red'],
+                ['icon' => 'fa-desktop', 'key' => 'monitors', 'name' => 'Мониторы', 'color' => 'bg-blood-red'],
+                ['icon' => 'fa-chair', 'key' => 'chairs', 'name' => 'Кресла', 'color' => 'bg-cornell-red'],
+                ['icon' => 'fa-cog', 'key' => 'accessories', 'name' => 'Аксессуары', 'color' => 'bg-imperial-red'],
             ];
         @endphp
         
         @foreach($categories as $category)
             <div class="col-md-2 col-sm-4 mb-3">
-                <a href="{{ route('products.index') }}?category={{ $category['name'] }}" 
+                <a href="{{ route('products.index') }}?category={{ $category['key'] }}" 
                    class="text-decoration-none">
                     <div class="card card-gaming text-center h-100">
                         <div class="card-body">
                             <div class="{{ $category['color'] }} rounded-circle p-3 d-inline-block mb-3">
                                 <i class="fas {{ $category['icon'] }} fa-2x text-white-smoke"></i>
                             </div>
-                            <h6 class="card-title text-timberwolf">{{ $category['name'] }}</h6>
+                            <h6 class="card-title text-white-smoke">{{ $category['name'] }}</h6>
                         </div>
                     </div>
                 </a>
@@ -95,31 +97,4 @@
 </div>
 @endsection
 
-@push('scripts')
-<script>
-    // Инициализация Swiper на главной странице
-    document.addEventListener('DOMContentLoaded', function() {
-        if (document.querySelector('.banner-swiper')) {
-            new Swiper('.banner-swiper', {
-                loop: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                autoplay: {
-                    delay: 5000,
-                    disableOnInteraction: false,
-                },
-                effect: 'fade',
-                fadeEffect: {
-                    crossFade: true
-                },
-            });
-        }
-    });
-</script>
-@endpush
+{{-- Swiper инициализируется в app.js --}}

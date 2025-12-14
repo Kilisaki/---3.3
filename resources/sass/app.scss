@@ -7,8 +7,8 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 // Переменные цветов
-$night: #0b090aff;
-$eerie-black: #161a1dff;
+$night: #b1a7a6ff;
+$eerie-black: #471d5bff;
 $blood-red: #660708ff;
 $cornell-red: #a4161aff;
 $cornell-red-2: #ba181bff;
@@ -169,3 +169,91 @@ body {
 
 .text-white-smoke { color: $white-smoke; }
 .bg-white-smoke { background-color: $white-smoke; }
+
+// Fix Bootstrap Alert Colors for dark theme
+.alert {
+    background-color: $eerie-black;
+    border-color: $silver;
+    color: $white-smoke;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.2);
+    border-color: #28a745;
+    color: #90ee90;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    border-color: #dc3545;
+    color: #ff6b7a;
+}
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.2);
+    border-color: #17a2b8;
+    color: #7dd3e8;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.2);
+    border-color: #ffc107;
+    color: #ffd966;
+}
+
+// Fix card text colors
+.card-title {
+    color: $white-smoke !important;
+}
+
+.card-text {
+    color: $timberwolf !important;
+}
+
+// Fix table text colors
+.table {
+    color: $white-smoke;
+    
+    td, th {
+        color: inherit;
+    }
+    
+    thead th {
+        border-bottom-color: $silver;
+        color: $white-smoke;
+    }
+}
+
+// Fix badge text colors
+.badge {
+    color: $white;
+}
+
+// Fix pagination
+.page-link {
+    background-color: $eerie-black;
+    border-color: $silver;
+    color: $white-smoke;
+    
+    &:hover {
+        background-color: $cornell-red;
+        border-color: $imperial-red;
+        color: $white-smoke;
+    }
+}
+
+.page-item.active .page-link {
+    background-color: $imperial-red;
+    border-color: $imperial-red;
+    color: $white-smoke;
+}
+
+// Fix form labels
+.form-label {
+    color: $timberwolf;
+}
+
+// Fix small text
+small, .small {
+    color: $silver;
+}

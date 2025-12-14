@@ -1,14 +1,21 @@
 import './bootstrap';
 
 import Swiper from 'swiper';
+import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import 'swiper/css/effect-fade';
+
+// Экспортируем Swiper для использования в blade-шаблонах
+window.Swiper = Swiper;
 
 // Инициализация Swiper для баннеров
 const initSwiper = () => {
-    if (document.querySelector('.banner-swiper')) {
+    const bannerSwiper = document.querySelector('.banner-swiper');
+    if (bannerSwiper && !bannerSwiper.swiper) {
         new Swiper('.banner-swiper', {
+            modules: [Navigation, Pagination, Autoplay, EffectFade],
             loop: true,
             pagination: {
                 el: '.swiper-pagination',
@@ -21,6 +28,10 @@ const initSwiper = () => {
             autoplay: {
                 delay: 5000,
                 disableOnInteraction: false,
+            },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
             },
         });
     }

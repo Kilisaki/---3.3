@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Добавить товар')
+@section('title', isset($product) ? 'Редактировать товар' : 'Добавить товар')
 
 @section('content')
 <div class="container">
@@ -9,14 +9,19 @@
             <div class="card card-gaming">
                 <div class="card-header bg-eerie-black text-white-smoke">
                     <h4 class="mb-0">
-                        <i class="fas fa-plus-circle me-2"></i>Добавить новый товар
+                        <i class="fas {{ isset($product) ? 'fa-edit' : 'fa-plus-circle' }} me-2"></i>
+                        {{ isset($product) ? 'Редактировать товар' : 'Добавить новый товар' }}
                     </h4>
                 </div>
                 
                 <div class="card-body">
-                    <form action="{{ route('products.store') }}" method="POST" 
+                    <form action="{{ isset($product) ? route('products.update', $product) : route('products.store') }}" 
+                          method="POST" 
                           enctype="multipart/form-data" id="productForm">
                         @csrf
+                        @if(isset($product))
+                            @method('PUT')
+                        @endif
                         
                         <div class="row g-3">
                             <!-- Название -->
@@ -26,7 +31,7 @@
                                 </label>
                                 <input type="text" class="form-control bg-eerie-black text-white-smoke border-silver" 
                                        id="name" name="name" 
-                                       value="{{ old('name') }}" 
+                                       value="{{ old('name', $product->name ?? '') }}" 
                                        required maxlength="255">
                             </div>
                             
@@ -38,21 +43,33 @@
                                 <input type="number" step="0.01" min="0" 
                                        class="form-control bg-eerie-black text-white-smoke border-silver" 
                                        id="price" name="price" 
-                                       value="{{ old('price') }}" required>
+                                       value="{{ old('price', $product->price ?? '') }}" required>
                             </div>
                             
                             <!-- Категория -->
                             <div class="col-md-6">
                                 <label for="category" class="form-label text-timberwolf">
-                                    Категория *
+                                    <i class="fas fa-tags me-1"></i>Категория *
                                 </label>
                                 <select class="form-select bg-eerie-black text-white-smoke border-silver" 
                                         id="category" name="category" required>
                                     <option value="">Выберите категорию</option>
+                                    @php
+                                        $categoryIcons = [
+                                            'keyboards' => '⌨️',
+                                            'mice' => '🖱️',
+                                            'headsets' => '🎧',
+                                            'mousepads' => '🖱️',
+                                            'controllers' => '🎮',
+                                            'monitors' => '🖥️',
+                                            'chairs' => '🪑',
+                                            'accessories' => '⚙️'
+                                        ];
+                                    @endphp
                                     @foreach($categories as $key => $category)
                                         <option value="{{ $key }}" 
-                                                {{ old('category') == $key ? 'selected' : '' }}>
-                                            {{ $category }}
+                                                {{ old('category', $product->category ?? '') == $key ? 'selected' : '' }}>
+                                            {{ ($categoryIcons[$key] ?? '📦') . ' ' . $category }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -66,7 +83,7 @@
                                 <input type="text" 
                                        class="form-control bg-eerie-black text-white-smoke border-silver" 
                                        id="brand" name="brand" 
-                                       value="{{ old('brand') }}">
+                                       value="{{ old('brand', $product->brand ?? '') }}">
                             </div>
                             
                             <!-- Описание -->
@@ -76,7 +93,7 @@
                                 </label>
                                 <textarea class="form-control bg-eerie-black text-white-smoke border-silver" 
                                           id="description" name="description" 
-                                          rows="3">{{ old('description') }}</textarea>
+                                          rows="3">{{ old('description', $product->description ?? '') }}</textarea>
                             </div>
                             
                             <!-- Количество -->
@@ -87,7 +104,7 @@
                                 <input type="number" min="0" 
                                        class="form-control bg-eerie-black text-white-smoke border-silver" 
                                        id="stock" name="stock" 
-                                       value="{{ old('stock', 0) }}" required>
+                                       value="{{ old('stock', $product->stock ?? 0) }}" required>
                             </div>
                             
                             <!-- Особый товар -->
@@ -95,7 +112,7 @@
                                 <div class="form-check mt-4 pt-2">
                                     <input type="checkbox" class="form-check-input" 
                                            id="is_featured" name="is_featured" value="1"
-                                           {{ old('is_featured') ? 'checked' : '' }}>
+                                           {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
                                     <label class="form-check-label text-timberwolf" for="is_featured">
                                         Отображать на главной
                                     </label>
@@ -109,22 +126,53 @@
                                         Дополнительные атрибуты
                                     </label>
                                     <div id="attributesContainer">
-                                        @if(old('attributes'))
-                                            @foreach(old('attributes') as $index => $attribute)
+                                        @php
+                                            // Обработка old('attributes') - может быть в формате [['key' => '...', 'value' => '...']]
+                                            $oldAttributes = old('attributes', []);
+                                            $productAttributes = isset($product) && $product->attributes ? $product->attributes : [];
+                                            
+                                            // Нормализуем формат атрибутов
+                                            $attributes = [];
+                                            if (!empty($oldAttributes)) {
+                                                // Если old('attributes') уже в правильном формате
+                                                foreach ($oldAttributes as $index => $attr) {
+                                                    if (is_array($attr) && isset($attr['key']) && isset($attr['value'])) {
+                                                        $key = $attr['key'];
+                                                        $value = $attr['value'];
+                                                        // Преобразуем массив в строку, если нужно
+                                                        if (is_array($value)) {
+                                                            $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                                                        }
+                                                        $attributes[] = ['key' => $key, 'value' => (string)$value];
+                                                    }
+                                                }
+                                            } elseif (!empty($productAttributes)) {
+                                                // Если это атрибуты из БД (формат ['key' => 'value'])
+                                                foreach ($productAttributes as $key => $value) {
+                                                    // Преобразуем массив в строку, если нужно
+                                                    if (is_array($value)) {
+                                                        $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                                                    }
+                                                    $attributes[] = ['key' => (string)$key, 'value' => (string)$value];
+                                                }
+                                            }
+                                        @endphp
+                                        @if(!empty($attributes))
+                                            @foreach($attributes as $index => $attr)
                                                 <div class="row attribute-row mb-2">
                                                     <div class="col-md-5">
                                                         <input type="text" 
                                                                class="form-control bg-eerie-black text-white-smoke border-silver" 
                                                                name="attributes[{{ $index }}][key]" 
                                                                placeholder="Название атрибута"
-                                                               value="{{ $attribute['key'] ?? '' }}">
+                                                               value="{{ htmlspecialchars($attr['key'], ENT_QUOTES, 'UTF-8') }}">
                                                     </div>
                                                     <div class="col-md-5">
                                                         <input type="text" 
                                                                class="form-control bg-eerie-black text-white-smoke border-silver" 
                                                                name="attributes[{{ $index }}][value]" 
                                                                placeholder="Значение"
-                                                               value="{{ $attribute['value'] ?? '' }}">
+                                                               value="{{ htmlspecialchars($attr['value'], ENT_QUOTES, 'UTF-8') }}">
                                                     </div>
                                                     <div class="col-md-2">
                                                         <button type="button" 
@@ -154,7 +202,28 @@
                                        accept="image/*" multiple>
                                 <small class="text-silver">
                                     Можно загрузить несколько изображений. Первое изображение будет главным.
+                                    @if(isset($product) && $product->images->count() > 0)
+                                        <br>Текущие изображения будут сохранены. Новые изображения будут добавлены.
+                                    @endif
                                 </small>
+                                
+                                @if(isset($product) && $product->images->count() > 0)
+                                    <div class="row mt-2">
+                                        <label class="text-timberwolf mb-2">Текущие изображения:</label>
+                                        @foreach($product->images as $image)
+                                            <div class="col-md-3 mb-2">
+                                                <div class="position-relative">
+                                                    <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                                         class="img-thumbnail border-silver" 
+                                                         style="height: 100px; object-fit: cover;">
+                                                    @if($image->is_main)
+                                                        <span class="badge bg-imperial-red position-absolute top-0 start-0">Главное</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                                 
                                 <div id="imagePreview" class="row mt-2"></div>
                             </div>
@@ -166,7 +235,8 @@
                                 <i class="fas fa-arrow-left me-1"></i>Назад
                             </a>
                             <button type="submit" class="btn btn-gaming">
-                                <i class="fas fa-save me-1"></i>Сохранить товар
+                                <i class="fas {{ isset($product) ? 'fa-save' : 'fa-plus-circle' }} me-1"></i>
+                                {{ isset($product) ? 'Обновить товар' : 'Создать товар' }}
                             </button>
                         </div>
                     </form>
@@ -179,8 +249,18 @@
 
 @push('scripts')
 <script>
+    // Show success toast after form submission if redirected from controller
+    @if(session('success'))
+        if (typeof showToast === 'function') {
+            showToast('{{ session('success') }}', 'success');
+        }
+    @endif
+    
     // Добавление динамических атрибутов
-    let attributeIndex = {{ old('attributes') ? count(old('attributes')) : 0 }};
+    @php
+        $attributeCount = !empty($attributes) ? count($attributes) : 0;
+    @endphp
+    let attributeIndex = {{ $attributeCount }};
     
     document.getElementById('addAttribute').addEventListener('click', function() {
         const container = document.getElementById('attributesContainer');

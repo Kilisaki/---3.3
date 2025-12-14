@@ -76,7 +76,22 @@
                 <tbody>
                     <tr>
                         <td><strong>Категория:</strong></td>
-                        <td>{{ $product->category }}</td>
+                        <td>
+                            @php
+                                $categoryIcons = [
+                                    'keyboards' => 'fa-keyboard',
+                                    'mice' => 'fa-mouse',
+                                    'headsets' => 'fa-headset',
+                                    'mousepads' => 'fa-square',
+                                    'controllers' => 'fa-gamepad',
+                                    'monitors' => 'fa-desktop',
+                                    'chairs' => 'fa-chair',
+                                    'accessories' => 'fa-cog'
+                                ];
+                                $icon = $categoryIcons[strtolower($product->category)] ?? 'fa-layer-group';
+                            @endphp
+                            <i class="fas {{ $icon }} me-1"></i>{{ $product->category }}
+                        </td>
                     </tr>
                     @if($product->brand)
                         <tr>
@@ -129,14 +144,57 @@
             </a>
             
             <form action="{{ route('products.destroy', $product) }}" 
-                  method="POST" class="flex-fill">
+                  method="POST" class="flex-fill"
+                  id="deleteForm{{ $product->id }}">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-outline-blood-red w-100"
-                        onclick="return confirm('Удалить товар?')">
-                    <i class="fas fa-trash me-1"></i>Удалить
+                        onclick="event.preventDefault(); handleDelete(event, {{ $product->id }});">
+                    <i class="fas fa-trash-alt me-1"></i>Удалить
                 </button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+// Handle delete with toast notification (if not already defined)
+if (typeof handleDelete === 'undefined') {
+    function handleDelete(event, productId) {
+        event.preventDefault();
+        if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+            const form = document.getElementById('deleteForm' + productId);
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (response.ok || response.redirected) {
+                    if (typeof showToast === 'function') {
+                        showToast('Товар успешно удален!', 'success');
+                    }
+                    setTimeout(() => {
+                        window.location.href = '{{ route('products.index') }}';
+                    }, 1000);
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast('Ошибка при удалении товара', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('Ошибка при удалении товара', 'error');
+                }
+            });
+        }
+    }
+}
+</script>
