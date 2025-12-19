@@ -94,36 +94,34 @@
                             </div>
                         @endif
                         
-                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <div class="d-flex justify-content-between align-items-start mt-auto gap-3">
                             <span class="h4 text-imperial-red mb-0">
                                 {{ $product->price }} ₽
                             </span>
                             
-                            <div class="btn-group" onclick="event.stopPropagation();">
-                                <button type="button" class="btn btn-sm btn-outline-silver" 
+                            <div class="d-flex flex-column gap-2" style="min-width: 150px;" onclick="event.stopPropagation();">
+                                <button type="button" class="btn btn-sm btn-outline-silver w-100" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#productModal{{ $product->id }}"
-                                        onclick="event.stopPropagation();"
-                                        title="Просмотр">
-                                    <i class="fas fa-eye"></i>
+                                        onclick="event.stopPropagation();">
+                                    <i class="fas fa-eye me-1"></i>Просмотр
                                 </button>
                                 
                                 <a href="{{ route('products.edit', $product) }}" 
-                                   class="btn btn-sm btn-outline-timberwolf"
-                                   onclick="event.stopPropagation();"
-                                   title="Редактировать">
-                                    <i class="fas fa-edit"></i>
+                                   class="btn btn-sm btn-outline-timberwolf w-100"
+                                   onclick="event.stopPropagation();">
+                                    <i class="fas fa-edit me-1"></i>Редактировать
                                 </a>
                                 
                                 <form action="{{ route('products.destroy', $product) }}" 
-                                      method="POST" class="d-inline"
+                                      method="POST"
                                       onclick="event.stopPropagation();"
                                       id="deleteForm{{ $product->id }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-blood-red"
+                                    <button type="submit" class="btn btn-sm btn-outline-blood-red w-100"
                                             onclick="event.stopPropagation(); handleDelete(event, {{ $product->id }});">
-                                        <i class="fas fa-trash-alt"></i>
+                                        <i class="fas fa-trash-alt me-1"></i>Удалить
                                     </button>
                                 </form>
                             </div>
@@ -304,5 +302,53 @@ function openProductModal(productId) {
         modal.show();
     }
 }
+
+// Навигация между модальными окнами товаров с помощью клавиатуры
+document.addEventListener('keydown', function(event) {
+    // Проверяем, открыто ли модальное окно
+    const openModal = document.querySelector('.modal.show');
+    if (!openModal) return;
+    
+    // Получаем ID открытого модального окна
+    const modalId = openModal.id;
+    const matchId = modalId.match(/\d+$/);
+    if (!matchId) return;
+    
+    const currentId = parseInt(matchId[0]);
+    
+    if (event.key === 'ArrowRight') {
+        // Находим следующее модальное окно
+        let nextId = currentId + 1;
+        let nextModal = document.getElementById('productModal' + nextId);
+        
+        // Если нет модального окна с таким ID, ищем первый доступный
+        if (!nextModal) {
+            nextId = 1;
+            nextModal = document.getElementById('productModal' + nextId);
+        }
+        
+        if (nextModal) {
+            event.preventDefault();
+            const currentModal = bootstrap.Modal.getInstance(openModal);
+            if (currentModal) {
+                currentModal.hide();
+            }
+            openProductModal(nextId);
+        }
+    } else if (event.key === 'ArrowLeft') {
+        // Находим предыдущее модальное окно
+        let prevId = currentId - 1;
+        let prevModal = document.getElementById('productModal' + prevId);
+        
+        if (prevModal) {
+            event.preventDefault();
+            const currentModal = bootstrap.Modal.getInstance(openModal);
+            if (currentModal) {
+                currentModal.hide();
+            }
+            openProductModal(prevId);
+        }
+    }
+});
 </script>
 @endpush

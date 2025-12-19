@@ -258,6 +258,162 @@
         footer h5, footer p {
             color: var(--white-smoke) !important;
         }
+        
+        /* Modal Styles - ЖЕСТКИЕ СТИЛИ ДЛЯ МОДАЛЕЙ */
+        .modal-content {
+            background-color: var(--eerie-black) !important;
+            color: var(--white-smoke) !important;
+            border: 1px solid var(--silver) !important;
+        }
+        
+        .modal-header {
+            background-color: var(--eerie-black) !important;
+            border-bottom: 1px solid var(--silver) !important;
+            color: var(--white-smoke) !important;
+        }
+        
+        .modal-header .modal-title {
+            color: var(--white-smoke) !important;
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            background-color: var(--eerie-black) !important;
+            color: var(--white-smoke) !important;
+        }
+        
+        .modal-body * {
+            background-color: transparent !important;
+        }
+        
+        .modal-body .carousel-inner {
+            background-color: var(--night) !important;
+        }
+        
+        .modal-body .carousel-item {
+            background-color: var(--night) !important;
+        }
+        
+        .modal-footer {
+            background-color: var(--eerie-black) !important;
+            border-top: 1px solid var(--silver) !important;
+        }
+        
+        .modal-backdrop {
+            background-color: rgba(11, 9, 10, 0.7) !important;
+        }
+        
+        .btn-close-white {
+            filter: brightness(0) invert(1) !important;
+        }
+        
+        /* Table в модале */
+        .modal-body .table {
+            color: var(--white-smoke) !important;
+            background-color: var(--eerie-black) !important;
+        }
+        
+        .modal-body .table-borderless {
+            background-color: transparent !important;
+        }
+        
+        .modal-body .table td,
+        .modal-body .table th {
+            color: var(--white-smoke) !important;
+            border-color: var(--silver) !important;
+            background-color: transparent !important;
+        }
+        
+        /* Текст в модале */
+        .modal-body h1,
+        .modal-body h2,
+        .modal-body h3,
+        .modal-body h4,
+        .modal-body h5,
+        .modal-body h6 {
+            color: var(--white-smoke) !important;
+        }
+        
+        .modal-body p,
+        .modal-body span,
+        .modal-body div {
+            color: var(--white-smoke) !important;
+        }
+        
+        .modal-body .text-timberwolf {
+            color: var(--timberwolf) !important;
+        }
+        
+        .modal-body .text-imperial-red {
+            color: var(--imperial-red) !important;
+        }
+        
+        .modal-body .text-silver {
+            color: var(--silver) !important;
+        }
+        
+        /* Карусель в модале */
+        .modal-body .carousel-control-prev-icon,
+        .modal-body .carousel-control-next-icon {
+            filter: brightness(0) invert(1) !important;
+        }
+        
+        /* Бейджи в модале */
+        .modal-body .badge {
+            background-color: var(--cornell-red) !important;
+            color: var(--white-smoke) !important;
+        }
+        
+        /* Кнопки в модале */
+        .modal-body .btn-gaming {
+            background-color: var(--cornell-red) !important;
+            color: var(--white-smoke) !important;
+            border: none !important;
+        }
+        
+        .modal-body .btn-gaming:hover {
+            background-color: var(--imperial-red) !important;
+            color: var(--white-smoke) !important;
+        }
+        
+        .modal-body .btn-outline-silver {
+            border-color: var(--silver) !important;
+            color: var(--silver) !important;
+            background-color: transparent !important;
+        }
+        
+        .modal-body .btn-outline-silver:hover {
+            background-color: var(--silver) !important;
+            color: var(--night) !important;
+        }
+        
+        .modal-body .btn-outline-timberwolf {
+            border-color: var(--timberwolf) !important;
+            color: var(--timberwolf) !important;
+            background-color: transparent !important;
+        }
+        
+        .modal-body .btn-outline-timberwolf:hover {
+            background-color: var(--timberwolf) !important;
+            color: var(--night) !important;
+        }
+        
+        .modal-body .btn-outline-blood-red {
+            border-color: var(--blood-red) !important;
+            color: var(--blood-red) !important;
+            background-color: transparent !important;
+        }
+        
+        .modal-body .btn-outline-blood-red:hover {
+            background-color: var(--blood-red) !important;
+            color: var(--white-smoke) !important;
+        }
+        
+        /* Миниатюры */
+        .modal-body .img-thumbnail {
+            border-color: var(--silver) !important;
+            background-color: var(--night) !important;
+        }
     </style>
 </head>
 <body>
@@ -332,85 +488,168 @@
     
     @stack('scripts')
     
-    <script>
-        // Page Loader
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('pageLoader');
-            setTimeout(function() {
-                loader.classList.add('hidden');
-            }, 300);
-        });
-        
-        // Show loader on page navigation
-        document.addEventListener('DOMContentLoaded', function() {
-            const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="javascript:"]):not([target="_blank"])');
-            links.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    // Skip if it's a form submission or external link
-                    if (this.closest('form') || this.hasAttribute('data-bs-toggle')) {
-                        return;
+<script>
+    // Page Loader - исправленная версия
+    function hidePageLoader() {
+        const loader = document.getElementById('pageLoader');
+        if (loader) {
+            loader.classList.add('hidden');
+        }
+    }
+
+    // Скрываем loader когда страница загружена
+    if (document.readyState === 'complete') {
+        hidePageLoader();
+    } else {
+        window.addEventListener('load', hidePageLoader);
+        // Таймаут на случай, если load не срабатывает
+        setTimeout(hidePageLoader, 3000);
+    }
+
+    // Show loader on page navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="javascript:"]):not([target="_blank"])');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Skip if it's a form submission or external link
+                if (this.closest('form') || this.hasAttribute('data-bs-toggle')) {
+                    return;
+                }
+                const href = this.getAttribute('href');
+                if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+                    const loader = document.getElementById('pageLoader');
+                    if (loader) {
+                        loader.classList.remove('hidden');
                     }
-                    const href = this.getAttribute('href');
-                    if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
-                        document.getElementById('pageLoader').classList.remove('hidden');
-                    }
-                });
-            });
-            
-            // Handle form submissions
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
-                form.addEventListener('submit', function() {
-                    document.getElementById('pageLoader').classList.remove('hidden');
-                });
+                }
             });
         });
-        
-        // Toast Notification System
-        function showToast(message, type = 'success') {
-            const toastContainer = document.querySelector('.toast-container');
-            const toastId = 'toast-' + Date.now();
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                warning: 'fa-exclamation-triangle',
-                info: 'fa-info-circle'
-            };
-            
-            const toastHtml = `
-                <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
-                    <div class="toast-header bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type} text-white">
-                        <i class="fas ${icons[type] || icons.success} me-2"></i>
-                        <strong class="me-auto">${type === 'success' ? 'Успешно' : type === 'error' ? 'Ошибка' : type === 'warning' ? 'Предупреждение' : 'Информация'}</strong>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
+
+        // Handle form submissions
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                const loader = document.getElementById('pageLoader');
+                if (loader) {
+                    loader.classList.remove('hidden');
+                }
+            });
+        });
+    });
+
+    // Toast functionality - исправленная версия
+    function showToast(message, type = 'success') {
+        const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+        const toastId = 'toast-' + Date.now();
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle'
+        };
+
+        const bgClass = type === 'error' ? 'danger' : type;
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center bg-${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body text-white">
+                        <i class="fas ${icons[type] || icons.info} me-2"></i>
                         ${message}
                     </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
-            `;
-            
-            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
-            
-            // Remove toast element after it's hidden
-            toastElement.addEventListener('hidden.bs.toast', function() {
-                toastElement.remove();
-            });
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        const toastElement = document.getElementById(toastId);
+        
+        // Используем Bootstrap Toast если доступен
+        try {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+                const toast = new bootstrap.Toast(toastElement, {
+                    autohide: true,
+                    delay: 5000
+                });
+                toast.show();
+                
+                toastElement.addEventListener('hidden.bs.toast', function() {
+                    if (toastElement && toastElement.parentNode) {
+                        toastElement.remove();
+                    }
+                });
+                return;
+            }
+        } catch (error) {
+            console.warn('Bootstrap Toast ошибка:', error);
         }
         
-        // Show toast from session flash messages
-        @if(session('success'))
-            showToast('{{ session('success') }}', 'success');
-        @endif
+        // Fallback - CSS-based автоскрытие
+        showFallbackToast(toastElement);
+    }
+
+    // Fallback функция для тостов
+    function showFallbackToast(element) {
+        element.classList.add('show');
+        element.style.display = 'block';
+        element.style.opacity = '1';
+        element.style.transition = 'opacity 0.3s ease';
         
-        @if($errors->any())
-            @foreach($errors->all() as $error)
-                showToast('{{ $error }}', 'error');
-            @endforeach
-        @endif
-    </script>
+        // Автоматическое скрытие через 5 секунд
+        const hideTimeout = setTimeout(() => {
+            element.style.opacity = '0';
+            setTimeout(() => {
+                if (element && element.parentNode) {
+                    element.remove();
+                }
+            }, 300);
+        }, 5000);
+        
+        // Закрытие по кнопке
+        const closeBtn = element.querySelector('[data-bs-dismiss="toast"]');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                clearTimeout(hideTimeout);
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    if (element && element.parentNode) {
+                        element.remove();
+                    }
+                }, 300);
+            });
+        }
+    }
+
+    // Создание контейнера если его нет
+    function createToastContainer() {
+        let container = document.querySelector('.toast-container');
+        if (container) {
+            return container;
+        }
+        
+        container = document.createElement('div');
+        container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        container.setAttribute('aria-live', 'polite');
+        container.setAttribute('aria-atomic', 'true');
+        document.body.appendChild(container);
+        return container;
+    }
+
+    // Инициализируем при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        // Показываем тосты из сессии с задержкой
+        setTimeout(() => {
+            @if(session('success'))
+                showToast('{{ session('success') }}', 'success');
+            @endif
+
+            @if($errors->any())
+                @foreach($errors->all() as $error)
+                    showToast('{{ $error }}', 'error');
+                @endforeach
+            @endif
+        }, 300);
+    });
+</script>
 </body>
 </html>

@@ -72,7 +72,7 @@
         <!-- Основная информация -->
         <div class="mb-4">
             <h5 class="text-white-smoke mb-3">Основные характеристики</h5>
-            <table class="table table-borderless text-timberwolf">
+            <table class="table table-borderless text-timberwolf bg-eerie-black">
                 <tbody>
                     <tr>
                         <td><strong>Категория:</strong></td>
@@ -137,20 +137,20 @@
         @endif
         
         <!-- Кнопки действий -->
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-column gap-2">
             <a href="{{ route('products.edit', $product) }}" 
-               class="btn btn-gaming flex-fill">
-                <i class="fas fa-edit me-1"></i>Редактировать
+               class="btn btn-gaming w-100">
+                <i class="fas fa-edit me-2"></i>Редактировать
             </a>
             
             <form action="{{ route('products.destroy', $product) }}" 
-                  method="POST" class="flex-fill"
+                  method="POST"
                   id="deleteForm{{ $product->id }}">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-outline-blood-red w-100"
                         onclick="event.preventDefault(); handleDelete(event, {{ $product->id }});">
-                    <i class="fas fa-trash-alt me-1"></i>Удалить
+                    <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>
         </div>
