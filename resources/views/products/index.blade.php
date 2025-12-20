@@ -63,7 +63,7 @@
     <div class="row g-4">
         @forelse($products as $product)
             <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="card card-gaming h-100" style="cursor: pointer;" 
+                <div class="card card-gaming h-100 product-card" tabindex="0" role="button" aria-label="Открыть {{ $product->name }}" data-product-id="{{ $product->id }}" style="cursor: pointer;" 
                      onclick="openProductModal({{ $product->id }})">
                     @if($product->mainImage)
                         <img src="{{ asset('storage/' . $product->mainImage->image_path) }}" 
@@ -107,12 +107,15 @@
                                     <i class="fas fa-eye me-1"></i>Просмотр
                                 </button>
                                 
+                                @can('update', $product)
                                 <a href="{{ route('products.edit', $product) }}" 
                                    class="btn btn-sm btn-outline-timberwolf w-100"
                                    onclick="event.stopPropagation();">
                                     <i class="fas fa-edit me-1"></i>Редактировать
                                 </a>
+                                @endcan
                                 
+                                @can('delete', $product)
                                 <form action="{{ route('products.destroy', $product) }}" 
                                       method="POST"
                                       onclick="event.stopPropagation();"
@@ -124,35 +127,44 @@
                                         <i class="fas fa-trash-alt me-1"></i>Удалить
                                     </button>
                                 </form>
+                                @endcan
                             </div>
                         </div>
                     </div>
                     
                     <div class="card-footer bg-transparent border-top border-silver">
-                        <small class="text-silver">
-                            @php
-                                $categoryIcons = [
-                                    'keyboards' => 'fa-keyboard',
-                                    'mice' => 'fa-mouse',
-                                    'headsets' => 'fa-headset',
-                                    'mousepads' => 'fa-square',
-                                    'controllers' => 'fa-gamepad',
-                                    'monitors' => 'fa-desktop',
-                                    'chairs' => 'fa-chair',
-                                    'accessories' => 'fa-cog'
-                                ];
-                                $icon = $categoryIcons[strtolower($product->category)] ?? 'fa-layer-group';
-                            @endphp
-                            <i class="fas {{ $icon }} me-1"></i>{{ $product->category }}
-                            @if($product->stock > 0)
-                                <span class="ms-3 text-success">
-                                    <i class="fas fa-check-circle me-1"></i>В наличии
-                                </span>
-                            @else
-                                <span class="ms-3 text-danger">
-                                    <i class="fas fa-times-circle me-1"></i>Нет в наличии
-                                </span>
-                            @endif
+                        <small class="text-silver d-flex justify-content-between align-items-center">
+                            <span>
+                                @php
+                                    $categoryIcons = [
+                                        'keyboards' => 'fa-keyboard',
+                                        'mice' => 'fa-mouse',
+                                        'headsets' => 'fa-headset',
+                                        'mousepads' => 'fa-square',
+                                        'controllers' => 'fa-gamepad',
+                                        'monitors' => 'fa-desktop',
+                                        'chairs' => 'fa-chair',
+                                        'accessories' => 'fa-cog'
+                                    ];
+                                    $icon = $categoryIcons[strtolower($product->category)] ?? 'fa-layer-group';
+                                @endphp
+                                <i class="fas {{ $icon }} me-1"></i>{{ $product->category }}
+                            </span>
+
+                            <span>
+                                <a href="{{ route('users.objects', $product->user->username) }}" class="text-silver text-decoration-none">
+                                    <i class="fas fa-user me-1"></i>{{ $product->user->username }}
+                                </a>
+                                @if($product->stock > 0)
+                                    <span class="ms-3 text-success">
+                                        <i class="fas fa-check-circle me-1"></i>В наличии
+                                    </span>
+                                @else
+                                    <span class="ms-3 text-danger">
+                                        <i class="fas fa-times-circle me-1"></i>Нет в наличии
+                                    </span>
+                                @endif
+                            </span>
                         </small>
                     </div>
                 </div>
@@ -164,8 +176,8 @@
                     <div class="modal-content bg-eerie-black text-white-smoke">
                         <div class="modal-header border-silver">
                             <h5 class="modal-title">{{ $product->name }}</h5>
-                            <button type="button" class="btn-close btn-close-white" 
-                                    data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close btn-close-white" 
+                                    data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             @include('products.partials.show', ['product' => $product])
@@ -179,9 +191,11 @@
                     <i class="fas fa-box-open fa-4x text-silver mb-3"></i>
                     <h3 class="text-timberwolf">Товары не найдены</h3>
                     <p class="text-silver">Добавьте первый товар в магазин</p>
+                    @auth
                     <a href="{{ route('products.create') }}" class="btn btn-gaming">
                         <i class="fas fa-plus me-1"></i>Добавить товар
                     </a>
+                    @endauth
                 </div>
             </div>
         @endforelse
@@ -192,7 +206,7 @@
         <div class="row mt-4">
             <div class="col-12">
                 <nav>
-                    {{ $products->links('vendor.pagination.bootstrap-5') }}
+                    {{ $products->links('pagination::bootstrap-5') }}
                 </nav>
             </div>
         </div>
@@ -271,83 +285,52 @@ document.addEventListener('DOMContentLoaded', function() {
             filterForm.submit();
         });
     }
-    
-    // Инициализация модальных окон Bootstrap
-    const productModals = document.querySelectorAll('.modal');
-    productModals.forEach(function(modal) {
-        if (!modal._modal) {
-            modal._modal = new bootstrap.Modal(modal);
-        }
-    });
 });
 
-// Функция для открытия модального окна товара
-function openProductModal(productId) {
-    const modalElement = document.getElementById('productModal' + productId);
-    if (modalElement) {
-        let modal = bootstrap.Modal.getInstance(modalElement);
-        if (!modal) {
-            modal = new bootstrap.Modal(modalElement);
-        }
-        
-        // Инициализация карусели при открытии модального окна
-        modalElement.addEventListener('shown.bs.modal', function() {
-            const carousel = modalElement.querySelector('.carousel');
-            if (carousel && !carousel._carousel) {
-                const carouselInstance = new bootstrap.Carousel(carousel);
-                carousel._carousel = carouselInstance;
-            }
-        }, { once: true });
-        
-        modal.show();
-    }
-}
+// Keyboard navigation for product modals' carousels and close-button fallback
+document.addEventListener('shown.bs.modal', function(e) {
+    const modal = e.target;
+    // ensure we only handle product modals
+    if (!modal.id || !modal.id.startsWith('productModal')) return;
 
-// Навигация между модальными окнами товаров с помощью клавиатуры
-document.addEventListener('keydown', function(event) {
-    // Проверяем, открыто ли модальное окно
-    const openModal = document.querySelector('.modal.show');
-    if (!openModal) return;
-    
-    // Получаем ID открытого модального окна
-    const modalId = openModal.id;
-    const matchId = modalId.match(/\d+$/);
-    if (!matchId) return;
-    
-    const currentId = parseInt(matchId[0]);
-    
-    if (event.key === 'ArrowRight') {
-        // Находим следующее модальное окно
-        let nextId = currentId + 1;
-        let nextModal = document.getElementById('productModal' + nextId);
-        
-        // Если нет модального окна с таким ID, ищем первый доступный
-        if (!nextModal) {
-            nextId = 1;
-            nextModal = document.getElementById('productModal' + nextId);
+    const carousel = modal.querySelector('.carousel');
+    if (!carousel) return;
+
+    // make carousel focusable and focus it so keyboard events are intuitive
+    carousel.setAttribute('tabindex', '0');
+    carousel.focus();
+
+    const carouselInstance = bootstrap.Carousel.getOrCreateInstance(carousel, { ride: false });
+
+    const keyHandler = function(ev) {
+        if (ev.key === 'ArrowLeft') {
+            carouselInstance.prev();
+            ev.preventDefault();
+        } else if (ev.key === 'ArrowRight') {
+            carouselInstance.next();
+            ev.preventDefault();
         }
-        
-        if (nextModal) {
-            event.preventDefault();
-            const currentModal = bootstrap.Modal.getInstance(openModal);
-            if (currentModal) {
-                currentModal.hide();
-            }
-            openProductModal(nextId);
-        }
-    } else if (event.key === 'ArrowLeft') {
-        // Находим предыдущее модальное окно
-        let prevId = currentId - 1;
-        let prevModal = document.getElementById('productModal' + prevId);
-        
-        if (prevModal) {
-            event.preventDefault();
-            const currentModal = bootstrap.Modal.getInstance(openModal);
-            if (currentModal) {
-                currentModal.hide();
-            }
-            openProductModal(prevId);
-        }
+    };
+
+    // store handler on the modal element so we can remove it later
+    modal.__carouselKeyHandler = keyHandler;
+    document.addEventListener('keydown', keyHandler);
+
+    // fallback: ensure close buttons call bootstrap hide if data-bs-dismiss doesn't work
+    const closeBtn = modal.querySelector('[data-bs-dismiss="modal"]');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+            const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+            modalInstance.hide();
+        });
+    }
+});
+
+document.addEventListener('hidden.bs.modal', function(e) {
+    const modal = e.target;
+    if (modal && modal.__carouselKeyHandler) {
+        document.removeEventListener('keydown', modal.__carouselKeyHandler);
+        delete modal.__carouselKeyHandler;
     }
 });
 </script>

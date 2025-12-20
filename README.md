@@ -54,6 +54,66 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
+## Project setup for multi-user lab
+
+Follow these steps to complete the multi-user features and verify the functionality:
+
+1. Configure PostgreSQL in your `.env` file (example):
+
+```
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=your_db
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+```
+
+2. Install PHP dependencies and run migrations:
+
+```
+composer install
+php artisan migrate
+```
+
+3. Install Laravel Breeze to enable authentication scaffolding (if not already installed):
+
+```
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+npm install
+npm run dev
+```
+
+4. Set an admin user (use Tinker or the artisan helper command):
+
+Using Tinker:
+
+```
+php artisan tinker
+>>> $u = App\\Models\\User::where('email','you@example.com')->first();
+>>> $u->is_admin = true; $u->save();
+```
+
+Or using the new artisan command:
+
+```
+php artisan app:set-admin you@example.com
+```
+
+To remove admin rights:
+
+```
+php artisan app:set-admin you@example.com --remove
+```
+
+5. Verify:
+- Register/login at `/register` and `/login`.
+- Create products (user_id should be set to current user).
+- Regular users can edit/delete their products; admins can restore and force-delete.
+
+---
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

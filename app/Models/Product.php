@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\User;
 
 class Product extends Model
 {
@@ -19,7 +20,8 @@ class Product extends Model
         'brand',
         'attributes',
         'image',
-        'is_featured'
+        'is_featured',
+        'user_id'
     ];
 
     protected $casts = [
@@ -51,6 +53,11 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function getMainImageAttribute()

@@ -57,7 +57,9 @@ class ProductSeeder extends Seeder
             ],
         ];
 
+        $userId = \DB::table('users')->value('id') ?? null;
         foreach ($products as $product) {
+            $product['user_id'] = $userId;
             Product::create($product);
         }
     }

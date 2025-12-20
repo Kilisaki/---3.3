@@ -6,10 +6,16 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 use Intervention\Image\Facades\Image;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     // Валидационные правила
     protected function rules()
     {
@@ -29,7 +35,7 @@ class ProductController extends Controller
     // Главная страница со списком продуктов
     public function index(Request $request)
     {
-        $query = Product::with('images');
+        $query = Product::with(['images','user']);
         
         // Поиск по названию и описанию
         if ($request->filled('search')) {
@@ -91,6 +97,9 @@ class ProductController extends Controller
             $validated['attributes'] = $attributes;
         }
 
+        // Добавляем привязку к пользователю
+        $validated['user_id'] = auth()->id();
+
         // Создание продукта
         $product = Product::create($validated);
 
@@ -112,6 +121,8 @@ class ProductController extends Controller
     // Страница редактирования
     public function edit(Product $product)
     {
+        $this->authorize('update', $product);
+
         $categories = $this->getCategories();
         $product->load('images'); // Загружаем изображения для редактирования
         return view('products.create', compact('product', 'categories'));
@@ -120,6 +131,8 @@ class ProductController extends Controller
     // Обновление продукта
     public function update(Request $request, Product $product)
     {
+        $this->authorize('update', $product);
+
         $validated = $request->validate($this->rules());
         
         // Обработка JSON атрибутов
@@ -148,23 +161,38 @@ class ProductController extends Controller
     // Удаление продукта (Soft Delete)
     public function destroy(Product $product)
     {
+        $this->authorize('delete', $product);
+
         $product->delete();
         return redirect()->route('products.index')
             ->with('success', 'Товар успешно удален!');
     }
 
-    // Восстановление продукта
+    // Страница с мягко удалёнными товарами (admin only)
+    public function trashed()
+    {
+        Gate::authorize('isAdmin');
+
+        $products = Product::onlyTrashed()->with('images', 'user')->paginate(12);
+        return view('products.trashed', compact('products'));
+    }
+
+    // Восстановление продукта (admin only)
     public function restore($id)
     {
-        Product::withTrashed()->findOrFail($id)->restore();
-        return redirect()->route('products.index')
+        $product = Product::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $product);
+
+        $product->restore();
+        return redirect()->route('products.trashed')
             ->with('success', 'Товар успешно восстановлен!');
     }
 
-    // Полное удаление
+    // Полное удаление (admin only)
     public function forceDelete($id)
     {
         $product = Product::withTrashed()->findOrFail($id);
+        $this->authorize('forceDelete', $product);
         
         // Удаление изображений
         foreach ($product->images as $image) {
@@ -172,7 +200,7 @@ class ProductController extends Controller
         }
         
         $product->forceDelete();
-        return redirect()->route('products.index')
+        return redirect()->route('products.trashed')
             ->with('success', 'Товар полностью удален!');
     }
 
