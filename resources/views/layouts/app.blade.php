@@ -14,6 +14,7 @@
         <!-- Scripts -->
         @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     </head>
+
     <body class="font-sans antialiased">
         <!-- Loading Spinner -->
         <div id="pageLoader" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">

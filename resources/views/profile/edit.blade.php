@@ -18,7 +18,15 @@
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
-
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button
+                    type="submit"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm text-white"
+                >
+                    Logout
+                </button>
+            </form>
             <div class="p-4 sm:p-8 bg-eerie-black shadow sm:rounded-lg text-white-smoke">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
@@ -26,4 +34,5 @@
             </div>
         </div>
     </div>
+    
 </x-app-layout>

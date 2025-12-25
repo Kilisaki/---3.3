@@ -4,9 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 Route::get('/', function () {
-    return view('home');
+    return view('home');            
 })->name('home');
 
 Route::get('/home', function () {
@@ -14,14 +15,24 @@ Route::get('/home', function () {
 })->name('home.alt');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard', [
+        'users' => User::query()->latest()->get(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Public product routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])
     ->name('products.show')
-    ->where('product', '[0-9]+'); // Important: numeric constraint
+    ->where('product', '[0-9]+');
+
+// Маршрут для модального окна товара
+Route::get('/products/{product}/modal', [ProductController::class, 'showModal'])
+    ->name('products.modal');
+
+// Просмотр товаров пользователя
+Route::get('users/{username}/objects', [UserController::class, 'objects'])
+    ->name('users.objects');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -32,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     // Soft delete management
@@ -42,7 +53,6 @@ Route::middleware('auth')->group(function () {
 
     // User management
     Route::get('users', [UserController::class, 'index'])->name('users.index');
-    Route::get('users/{username}/objects', [UserController::class, 'objects'])->name('users.objects');
 });
 
-require __DIR__.'/auth.php';        
+require __DIR__.'/auth.php';

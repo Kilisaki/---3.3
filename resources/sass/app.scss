@@ -1,395 +1,411 @@
-// Tailwind (processed by PostCSS after SASS compilation)
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+        // Tailwind (processed by PostCSS after SASS compilation)
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
 
-// Fonts
-@import url('https://fonts.bunny.net/css?family=Nunito');
+        // Fonts
+        @import url('https://fonts.bunny.net/css?family=Nunito');
 
-// Variables
-@import 'variables';
+        // Variables
+        @import 'variables';
 
-// Bootstrap (import moved below so our color variables can override defaults)
-// Переменные цветов (черно-красная тема)
-$night: #000000;
-$eerie-black: #070707;
-$blood-red: #8b0000;
-$cornell-red: #b31217;
-$cornell-red-2: #c9222b;
-$imperial-red: #ff1f1f;
-$silver: #9a9a9a;
-$timberwolf: #d3d3d3;
-$white-smoke: #f5f3f4;
-$white: #ffffff;
+        // Bootstrap (import moved below so our color variables can override defaults)
+        // Переменные цветов (черно-красная тема)
+        $night: #000000;
+        $eerie-black: #070707;
+        $blood-red: #8b0000;
+        $cornell-red: #b31217;
+        $cornell-red-2: #c9222b;
+        $imperial-red: #ff1f1f;
+        $silver: #9a9a9a;
+        $timberwolf: #d3d3d3;
+        $white-smoke: #f5f3f4;
+        $white: #ffffff;
 
-// Импорт Bootstrap
-@import 'bootstrap/scss/bootstrap';
+        // Импорт Bootstrap
+        @import 'bootstrap/scss/bootstrap';
 
-// Собственные стили
-body {
-    background-color: $night;
-    color: $white-smoke;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.navbar {
-    background-color: $eerie-black !important;
-    border-bottom: 2px solid $imperial-red;
-    position: sticky;
-    top: 0;
-    z-index: 1030;
-    
-    .navbar-brand {
-        color: $imperial-red !important;
-        font-weight: bold;
-        
-        &:hover {
-            color: $cornell-red !important;
+        // Собственные стили
+        body {
+            background-color: $night;
+            color: $white-smoke;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-    }
-    
-    .nav-link {
-        color: $timberwolf !important;
-        
-        &.active, &:hover {
-            color: $imperial-red !important;
+
+        .navbar {
+            background-color: $eerie-black !important;
+            border-bottom: 2px solid $imperial-red;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            
+            .navbar-brand {
+                color: $imperial-red !important;
+                font-weight: bold;
+                
+                &:hover {
+                    color: $cornell-red !important;
+                }
+            }
+            
+            .nav-link {
+                color: $timberwolf !important;
+                
+                &.active, &:hover {
+                    color: $imperial-red !important;
+                }
+            }
+
+            .nav-profile-img {
+                width: 36px;
+                height: 36px;
+                object-fit: cover;
+                border: 2px solid rgba($white, 0.06);
+            }
+
+            .dropdown-menu.bg-eerie-black {
+                background-color: $eerie-black !important;
+                color: $white-smoke !important;
+                border: 1px solid $silver !important;
+            }
+
+            .dropdown-item {
+                color: $white-smoke !important;
+            }
         }
-    }
 
-    .nav-profile-img {
-        width: 36px;
-        height: 36px;
-        object-fit: cover;
-        border: 2px solid rgba($white, 0.06);
-    }
+        .btn-gaming {
+            background-color: $cornell-red;
+            color: $white-smoke;
+            border: 1px solid darken($cornell-red, 8%);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            padding: 0.45rem 0.9rem;
+            border-radius: 6px;
 
-    .dropdown-menu.bg-eerie-black {
-        background-color: $eerie-black !important;
-        color: $white-smoke !important;
-        border: 1px solid $silver !important;
-    }
-
-    .dropdown-item {
-        color: $white-smoke !important;
-    }
-}
-
-.btn-gaming {
-    background-color: $cornell-red;
-    color: $white-smoke;
-    border: 1px solid darken($cornell-red, 8%);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    padding: 0.45rem 0.9rem;
-    border-radius: 6px;
-
-    &:hover {
-        background-color: $imperial-red;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.45);
-        color: $white;
-    }
-}
-
-.card-gaming {
-    background-color: $eerie-black;
-    border: 1px solid $silver;
-    border-radius: 8px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    
-    &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba($imperial-red, 0.2);
-        border-color: $imperial-red;
-    }
-    
-    .card-header {
-        background-color: darken($eerie-black, 2%);
-        border-bottom: 1px solid $silver;
-    }
-}
-
-.modal-content {
-    background-color: $eerie-black;
-    color: $white-smoke;
-    border: 1px solid $imperial-red;
-    
-    .modal-header {
-        border-bottom-color: $silver;
-    }
-    
-    .modal-footer {
-        border-top-color: $silver;
-    }
-}
-
-// Style for white close button on dark backgrounds
-.btn-close-white {
-    filter: invert(1) grayscale(1) brightness(0.9);
-    background: transparent;
-    border: none;
-}
-
-// Improve default button outlines
-.btn-outline-silver {
-    color: $white-smoke;
-    border-color: $silver;
-}
-
-.btn-outline-timberwolf {
-    color: $timberwolf;
-    border-color: $timberwolf;
-}
-
-.btn-outline-blood-red {
-    color: $blood-red;
-    border-color: $blood-red;
-    &:hover {
-        background-color: rgba($blood-red, 0.08);
-        color: $white-smoke;
-    }
-}
-
-/* Blood red utilities */
-.text-blood-red { color: $blood-red; }
-.bg-blood-red { background-color: $blood-red; }
-
-.nav-profile-link {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.12s ease;
-}
-.nav-profile-link:hover { transform: translateY(-2px); }
-
-.form-control, .form-select {
-    background-color: $eerie-black;
-    color: $white-smoke;
-    border-color: $silver;
-    
-    &:focus {
-        background-color: $eerie-black;
-        color: $white-smoke;
-        border-color: $imperial-red;
-        box-shadow: 0 0 0 0.25rem rgba($imperial-red, 0.25);
-    }
-    
-    &:disabled {
-        background-color: lighten($night, 5%);
-        color: $silver;
-    }
-}
-
-// Свайпер баннеров
-.banner-swiper {
-    height: 400px;
-    border-radius: 10px;
-    overflow: hidden;
-    
-    .swiper-slide {
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            &:hover {
+                background-color: $imperial-red;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+                color: $white;
+            }
         }
-    }
-    
-    .swiper-button-next,
-    .swiper-button-prev {
-        color: $imperial-red;
-        background: rgba($eerie-black, 0.7);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        
-        &:after {
-            font-size: 20px;
+
+        .card-gaming {
+            background-color: $eerie-black;
+            border: 1px solid $silver;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba($imperial-red, 0.2);
+                border-color: $imperial-red;
+            }
+            
+            .card-header {
+                background-color: darken($eerie-black, 2%);
+                border-bottom: 1px solid $silver;
+            }
         }
-    }
-    
-    .swiper-pagination-bullet {
-        background-color: $silver;
-        
-        &-active {
+
+        .modal-content {
+            background-color: $eerie-black;
+            color: $white-smoke;
+            border: 1px solid $imperial-red;
+            
+            .modal-header {
+                border-bottom-color: $silver;
+            }
+            
+            .modal-footer {
+                border-top-color: $silver;
+            }
+        }
+
+        // Style for white close button on dark backgrounds
+        .btn-close-white {
+            filter: invert(1) grayscale(1) brightness(0.9);
+            background: transparent;
+            border: none;
+        }
+
+        // Improve default button outlines
+        .btn-outline-silver {
+            color: $white-smoke;
+            border-color: $silver;
+        }
+
+        .btn-outline-timberwolf {
+            color: $timberwolf;
+            border-color: $timberwolf;
+        }
+
+        .btn-outline-blood-red {
+            color: $blood-red;
+            border-color: $blood-red;
+            &:hover {
+                background-color: rgba($blood-red, 0.08);
+                color: $white-smoke;
+            }
+        }
+
+        /* Blood red utilities */
+        .text-blood-red { color: $blood-red; }
+        .bg-blood-red { background-color: $blood-red; }
+
+        .nav-profile-link {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.12s ease;
+        }
+        .nav-profile-link:hover { transform: translateY(-2px); }
+
+        .form-control, .form-select {
+            background-color: $eerie-black;
+            color: $white-smoke;
+            border-color: $silver;
+            
+            &:focus {
+                background-color: $eerie-black;
+                color: $white-smoke;
+                border-color: $imperial-red;
+                box-shadow: 0 0 0 0.25rem rgba($imperial-red, 0.25);
+            }
+            
+            &:disabled {
+                background-color: lighten($night, 5%);
+                color: $silver;
+            }
+        }
+
+        // Свайпер баннеров
+        .banner-swiper {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            
+            .swiper-slide {
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+            
+            .swiper-button-next,
+            .swiper-button-prev {
+                color: $imperial-red;
+                background: rgba($eerie-black, 0.7);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                
+                &:after {
+                    font-size: 20px;
+                }
+            }
+            
+            .swiper-pagination-bullet {
+                background-color: $silver;
+                
+                &-active {
+                    background-color: $imperial-red;
+                }
+            }
+        }
+
+        // Кастомные утилиты
+        .text-imperial-red { color: $imperial-red; }
+        .bg-imperial-red { background-color: $imperial-red; }
+        .border-imperial-red { border-color: $imperial-red; }
+
+        .text-cornell-red { color: $cornell-red; }
+        .bg-cornell-red { background-color: $cornell-red; }
+
+        .text-silver { color: $silver; }
+        .bg-silver { background-color: $silver; }
+        .border-silver { border-color: $silver; }
+
+        .text-timberwolf { color: $timberwolf; }
+        .bg-timberwolf { background-color: $timberwolf; }
+
+        .text-white-smoke { color: $white-smoke; }
+        .bg-white-smoke { background-color: $white-smoke; }
+
+        /* Dark background utility (used in modal tables, etc.) */
+        .bg-eerie-black { background-color: $eerie-black; }
+
+        // Fix Bootstrap Alert Colors for dark theme
+        .alert {
+            background-color: $eerie-black;
+            border-color: $silver;
+            color: $white-smoke;
+        }
+
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            color: #90ee90;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            color: #ff6b7a;
+        }
+
+        .alert-info {
+            background-color: rgba(23, 162, 184, 0.2);
+            border-color: #17a2b8;
+            color: #7dd3e8;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+            color: #ffd966;
+        }
+
+        // Fix card text colors
+        .card-title {
+            color: $white-smoke !important;
+        }
+
+        .card-text {
+            color: $timberwolf !important;
+        }
+
+        // Fix table text colors
+        .table {
+            color: $white-smoke;
+            
+            td, th {
+                color: inherit;
+            }
+            
+            thead th {
+                border-bottom-color: $silver;
+                color: $white-smoke;
+            }
+        }
+
+        // Ensure dark background for tables that explicitly request it
+        .table.bg-eerie-black,
+        .table.bg-eerie-black tbody,
+        .table.bg-eerie-black tr,
+        .table.bg-eerie-black td,
+        .table.bg-eerie-black th {
+            background-color: $eerie-black !important;
+            color: $white-smoke !important;
+        }
+
+        // Keyboard focus styles for product cards
+        .product-card {
+            outline: none;
+            transition: box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+
+        .product-card.keyboard-focused,
+        .product-card:focus {
+            box-shadow: 0 0 0 4px rgba($imperial-red, 0.18);
+            border-color: $imperial-red;
+        } 
+
+        // Fix badge text colors
+        .badge {
+            color: $white;
+        }
+
+        // Fix pagination
+        .page-link {
+            background-color: $eerie-black;
+            border-color: $silver;
+            color: $white-smoke;
+            
+            &:hover {
+                background-color: $cornell-red;
+                border-color: $imperial-red;
+                color: $white-smoke;
+            }
+        }
+
+        .page-item.active .page-link {
             background-color: $imperial-red;
+            border-color: $imperial-red;
+            color: $white-smoke;
         }
-    }
-}
 
-// Кастомные утилиты
-.text-imperial-red { color: $imperial-red; }
-.bg-imperial-red { background-color: $imperial-red; }
-.border-imperial-red { border-color: $imperial-red; }
+        // Fix form labels
+        .form-label {
+            color: $timberwolf;
+        }
 
-.text-cornell-red { color: $cornell-red; }
-.bg-cornell-red { background-color: $cornell-red; }
+        // Fix small text
+        small, .small {
+            color: $silver;
+        }
 
-.text-silver { color: $silver; }
-.bg-silver { background-color: $silver; }
-.border-silver { border-color: $silver; }
+        /* ===== Darken white cards and normalize inputs ===== */
+        /* Replace any explicit .bg-white/card backgrounds with theme dark */
+        .bg-white,
+        .card,
+        .card-body,
+        .bg-white.shadow,
+        .bg-white.overflow-hidden {
+            background-color: $eerie-black !important;
+            color: $white-smoke !important;
+            border: 1px solid $silver !important;
+        }
 
-.text-timberwolf { color: $timberwolf; }
-.bg-timberwolf { background-color: $timberwolf; }
+        /* Inputs unified appearance */
+        .form-control {
+            background-color: $eerie-black;
+            color: $white-smoke;
+            border-color: $silver;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
 
-.text-white-smoke { color: $white-smoke; }
-.bg-white-smoke { background-color: $white-smoke; }
+            &::placeholder {
+                color: $timberwolf;
+                opacity: 1;
+            }
 
-/* Dark background utility (used in modal tables, etc.) */
-.bg-eerie-black { background-color: $eerie-black; }
+            &:focus {
+                background-color: $eerie-black;
+                color: $white-smoke;
+                border-color: $imperial-red;
+                box-shadow: 0 0 0 0.25rem rgba($imperial-red, 0.12);
+                outline: none;
+            }
+        }
 
-// Fix Bootstrap Alert Colors for dark theme
-.alert {
-    background-color: $eerie-black;
-    border-color: $silver;
-    color: $white-smoke;
-}
+        /* Suppress blue autofill background in WebKit (Chrome, Edge) */
+        input:-webkit-autofill,
+        textarea:-webkit-autofill,
+        select:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px $eerie-black inset !important;
+            -webkit-text-fill-color: $white-smoke !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
 
-.alert-success {
-    background-color: rgba(40, 167, 69, 0.2);
-    border-color: #28a745;
-    color: #90ee90;
-}
+        /* Minor helpers */
+        .btn-gaming { border-radius: 6px; }
+        .nav-profile-img { border: 2px solid rgba($white, 0.06); }
+        .nav-btn {
+            @apply inline-flex items-center justify-center
+                px-4 py-2 text-sm font-medium rounded
+                transition-all duration-150;
 
-.alert-danger {
-    background-color: rgba(220, 53, 69, 0.2);
-    border-color: #dc3545;
-    color: #ff6b7a;
-}
+            background-color: $eerie-black;
+            color: $white-smoke;
+            border: 1px solid $silver;
 
-.alert-info {
-    background-color: rgba(23, 162, 184, 0.2);
-    border-color: #17a2b8;
-    color: #7dd3e8;
-}
-
-.alert-warning {
-    background-color: rgba(255, 193, 7, 0.2);
-    border-color: #ffc107;
-    color: #ffd966;
-}
-
-// Fix card text colors
-.card-title {
-    color: $white-smoke !important;
-}
-
-.card-text {
-    color: $timberwolf !important;
-}
-
-// Fix table text colors
-.table {
-    color: $white-smoke;
-    
-    td, th {
-        color: inherit;
-    }
-    
-    thead th {
-        border-bottom-color: $silver;
-        color: $white-smoke;
-    }
-}
-
-// Ensure dark background for tables that explicitly request it
-.table.bg-eerie-black,
-.table.bg-eerie-black tbody,
-.table.bg-eerie-black tr,
-.table.bg-eerie-black td,
-.table.bg-eerie-black th {
-    background-color: $eerie-black !important;
-    color: $white-smoke !important;
-}
-
-// Keyboard focus styles for product cards
-.product-card {
-    outline: none;
-    transition: box-shadow 0.12s ease, border-color 0.12s ease;
-}
-
-.product-card.keyboard-focused,
-.product-card:focus {
-    box-shadow: 0 0 0 4px rgba($imperial-red, 0.18);
-    border-color: $imperial-red;
-} 
-
-// Fix badge text colors
-.badge {
-    color: $white;
-}
-
-// Fix pagination
-.page-link {
-    background-color: $eerie-black;
-    border-color: $silver;
-    color: $white-smoke;
-    
-    &:hover {
-        background-color: $cornell-red;
-        border-color: $imperial-red;
-        color: $white-smoke;
-    }
-}
-
-.page-item.active .page-link {
-    background-color: $imperial-red;
-    border-color: $imperial-red;
-    color: $white-smoke;
-}
-
-// Fix form labels
-.form-label {
-    color: $timberwolf;
-}
-
-// Fix small text
-small, .small {
-    color: $silver;
-}
-
-/* ===== Darken white cards and normalize inputs ===== */
-/* Replace any explicit .bg-white/card backgrounds with theme dark */
-.bg-white,
-.card,
-.card-body,
-.bg-white.shadow,
-.bg-white.overflow-hidden {
-    background-color: $eerie-black !important;
-    color: $white-smoke !important;
-    border: 1px solid $silver !important;
-}
-
-/* Inputs unified appearance */
-.form-control {
-    background-color: $eerie-black;
-    color: $white-smoke;
-    border-color: $silver;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-
-    &::placeholder {
-        color: $timberwolf;
-        opacity: 1;
-    }
-
-    &:focus {
-        background-color: $eerie-black;
-        color: $white-smoke;
-        border-color: $imperial-red;
-        box-shadow: 0 0 0 0.25rem rgba($imperial-red, 0.12);
-        outline: none;
-    }
-}
-
-/* Suppress blue autofill background in WebKit (Chrome, Edge) */
-input:-webkit-autofill,
-textarea:-webkit-autofill,
-select:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px $eerie-black inset !important;
-    -webkit-text-fill-color: $white-smoke !important;
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-/* Minor helpers */
-.btn-gaming { border-radius: 6px; }
-.nav-profile-img { border: 2px solid rgba($white, 0.06); }
+            &:hover {
+                background-color: $cornell-red;
+                border-color: $imperial-red;
+                color: $white;
+                transform: translateY(-1px);
+            }
+        }           

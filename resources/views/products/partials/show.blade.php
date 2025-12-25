@@ -182,7 +182,7 @@ if (typeof handleDelete === 'undefined') {
                     setTimeout(() => {
                         window.location.href = '{{ route('products.index') }}';
                     }, 1000);
-                } else {
+                } else {        
                     if (typeof showToast === 'function') {
                         showToast('Ошибка при удалении товара', 'error');
                     }
@@ -197,4 +197,4 @@ if (typeof handleDelete === 'undefined') {
         }
     }
 }
-</script>
+</script>       

@@ -71,7 +71,7 @@
                                     data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            @include('products.partials.show', ['product' => $product])
+                            @include('products.partials.    show', ['product' => $product])
                         </div>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
     <div class="row">
         <div class="col-12">
             <h2 class="text-imperial-red mb-4">
-                <i class="fas fa-th-large me-2"></i>Категории
+                <i class="fas fa-th-large me-2"></i>Категории       
             </h2>
         </div>
         

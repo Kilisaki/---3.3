@@ -115,7 +115,7 @@ class ProductController extends Controller
     // Просмотр деталей продукта
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        return view('products.partials.show', compact('product'));
     }
 
     // Страница редактирования
